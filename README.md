@@ -12,10 +12,13 @@ Just a simple terminal connect4 player, ai utilising minimax with alpha/beta pru
 
 First install docker, then build the included Dockerfile from within downloaded folder 
   `docker build -t {image_name} -f Dockerfile .`
+  
 In order to evaluate your trained models make sure to create a volume 
   `docker volume create {volume_name}`
+  
 Then link your container to the volume when initialising
-  `docker run -itd --name {container_name} -v {volume_name}:/learn/checkpoints {image_name}
+  `docker run -itd --name {container_name} -v {volume_name}:/learn/checkpoints {image_name}`
+  
 You can then run commands via
   `docker exec -it {container_name} {command}`
 
