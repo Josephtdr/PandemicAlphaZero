@@ -13,7 +13,10 @@ log = logging.getLogger(__name__)
 def evaluate_model(i, seed):
     log.info(f'Evaluating ep {i}, seed {seed}')
     try:
-        v, info = agent.executeEpisode(model=model,seed=seed)
+        if args.mode_MCTS:
+            v, info = agent.executeEpisode(model=model,seed=seed)
+        else:
+            v, info = agent.executeEpisode_NOMCTS(model=model,seed=seed)
         log.info(f"Finished Evaluating seed {seed}, obatained result {'WON' if v==1 else 'LOST'}")
         return info
     except Exception as e:
@@ -37,6 +40,7 @@ if __name__ == "__main__":
     parser.add_argument('--external_log',default=0,type=int,choices=[0,1], help='Log to wandb')
     parser.add_argument('--n_processes', default=1,type=int, help='Number of processes to use during data generation' )
     parser.add_argument('--n_hidden_units', type=int, default=1024, help='Number of units per hidden layers in NN')    
+    parser.add_argument('--mode_MCTS',default=0,type=int,choices=[0,1], help='evaluate with or without MCTS')
     args = parser.parse_args()
 
     logging.basicConfig(stream=stdout,level=args.loglevel.upper(),

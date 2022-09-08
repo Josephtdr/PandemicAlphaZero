@@ -23,11 +23,11 @@ class AZ_Agent():
     def executeEpisode(self, seed=None, model=None):
         """
         This function executes one episode of self-play.
-        As the game is played, each turn is added as a training example to
+        If in training mode, as the game is played, each turn is added as a training example to
         trainExamples. The game is played till the game ends. After the game
         ends, the outcome of the game is used to assign values to each example
         in trainExamples.
-        Returns:
+        If in training mode, Returns:
             trainExamples: a list of examples of the form (state, pi, v)
                            pi is the MCTS informed policy vector,
                            v the A0GB value 
@@ -69,6 +69,32 @@ class AZ_Agent():
             return train_examples, info
         else:
             return v, info
+
+    def executeEpisode_NOMCTS(self, seed=None, model=None):
+        episode_info = {
+            'DISCARD' : 0, 'DRIVE_FERRY' : 0, 'DIRECT_FLIGHT' : 0, 
+            'CHARTER_FLIGHT' : 0, 'SHUTTLE_FLIGHT' : 0, 'GIVE_KNOWLEDGE' : 0, 
+            'RECEIVE_KNOWLEDGE' : 0, 'BUILD_RESEARCHSTATION' : 0, 
+            'TREAT_DISEASE' : 0, 'DISCOVER_CURE' : 0,  
+        }
+        env = self.env.copy()
+        obs= env.reset(seed=seed)
+        done = False
+
+        while not done:
+            mask = env.available_actions()
+            priors, _ = model.predict(obs, mask)
+
+            posACTS = np.where(priors==np.max(priors))[0]
+            action = np.random.choice(posACTS)
+
+            obs, v, done, info = env.step(action)
+            episode_info[info['action_type'].name] += 1
+        
+        del info['action_type']
+        info.update(episode_info)
+
+        return v, info
 
     def learn(self, i, generational_info):
         
