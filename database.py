@@ -2,7 +2,7 @@ import pickle
 import os
 from random import shuffle 
 
-#Based upon https://github.com/tmoer/alphazero_singleplayer/blob/master/helpers.py
+#Adapted from https://github.com/tmoer/alphazero_singleplayer/blob/master/helpers.py
 class Database:
     def __init__(self, args):
         #All measured in epochs

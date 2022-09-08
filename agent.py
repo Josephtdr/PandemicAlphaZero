@@ -1,15 +1,11 @@
 import wandb
 import logging
 import numpy as np
-from tqdm import tqdm
-import concurrent.futures
-from itertools import repeat
-from collections import Counter
 from mcts import MCTS
 from database import Database
 
 log = logging.getLogger(__name__)
-#Based upon https://github.com/suragnair/alpha-zero-general/blob/master/Coach.py
+#Adapted from https://github.com/suragnair/alpha-zero-general/blob/master/Coach.py
 class AZ_Agent():
     """
     This class executes the self-play + learning. It uses the functions defined
@@ -23,16 +19,6 @@ class AZ_Agent():
         self.training = training
         if training:
             self.training_history = Database(args)  # history of examples
-        # wandb.init(
-        # project="pandemic-ppo-raw",
-        # config = {
-        #     "training": training,
-        #     "Evaluating": not training,
-        #     "practice": practice,
-        #     "learning_rate": "unknown",
-        #     "architecture": "recNN",
-        #     "batch_size": "unknown"
-        # })
 
     def executeEpisode(self, seed=None, model=None):
         """
@@ -52,7 +38,6 @@ class AZ_Agent():
             'RECEIVE_KNOWLEDGE' : 0, 'BUILD_RESEARCHSTATION' : 0, 
             'TREAT_DISEASE' : 0, 'DISCOVER_CURE' : 0,  
         }
-    
 
         train_examples = []
         if model is None:
@@ -81,19 +66,9 @@ class AZ_Agent():
         info.update(episode_info)
 
         if self.training:
-            return train_examples, info  # [x.append(v) for x in train_examples]
+            return train_examples, info
         else:
             return v, info
-
-    # def learn_worker(self, i, seed):
-    #     try:
-    #         log.debug(f'Generating episode {i} ... ')
-    #         train_examples, info = self.executeEpisode(seed=seed)
-    #         log.debug(f'Episode {i} finished')
-    #         return train_examples, info
-    #     except Exception as e:
-    #         log.warning(f'Failed task {seed} :(, \n with warning: \n{e}\n')
-    #         return None
 
     def learn(self, i, generational_info):
         
@@ -111,83 +86,6 @@ class AZ_Agent():
 
             log.info(f'Saving Iter {self.args.model_iter}, Generation #{i} model, avg loss {pi_loss+v_loss} ... ')
             self.model.save_checkpoint(iteration=self.args.model_iter, generation=i)
-
-    # def ev_worker(self, model, seed):
-    #     log.info(f'Evaluating seed {seed}')
-    #     try:
-    #         v, info = self.executeEpisode(model=model,seed=seed)
-    #         log.debug(f"Finished Evaluating seed {seed}, obatained result {v}")
-    #         return info
-    #     except Exception as e:
-    #         log.warning(f'Failed task {seed} :(, \n with warning {e}')
-    #         return e
-        
-
-    # def evaluate(self, model, seeds):
-    #     self.training = False
-    #     external_log = False
-
-    #     if external_log:
-    #         wandb.init(
-    #         project="Pandemic_AZ",
-    #         config = {"Evaluating": not self.training,
-    #             "training": self.training,
-    #             "Evaluating": not self.training,
-    #             "practice": True,
-    #         })
-
-    #     with concurrent.futures.ProcessPoolExecutor(self.args.n_processes) as executor:
-    #         # results = list(tqdm(executor.map(self.ev_worker, repeat(model), seeds), total=len(seeds)))
-    #         results = executor.map(self.ev_worker, repeat(model), seeds)
-    #         for result in results:
-    #             if external_log:
-    #                 wandb.log(result)
-    #         log.info(f'Processing Finished')
-
-
-    #     return 
-    #     def crawl(q,process):
-    #         while not q.empty():
-    #             seed = q.get()
-    #             try:
-    #                 _, info = self.executeEpisode(model=model,seed=seed,process=process)
-    #                 log.debug(f"Finished Evaluating seed {seed}")
-    #             except:
-    #                 log.warning(f'Process {process} failed task {seed} :(')
-    #             # wandb.log(info)
-        
-    #     q = multiprocessing.Queue()
-    #     num_processes = 2
-    #     for seed in seeds:
-    #         q.put(seed)
-
-    #     processes = []
-
-    #     for i in range(num_processes):
-    #         log.debug(f'Starting process #{i} ...')
-    #         process = multiprocessing.Process(target=crawl, args=(q,i,))
-    #         process.start()
-    #         processes.append(process)
-
-    #     for process in processes:
-    #         process.join()
-    #     # q.join()
-
-    #     log.info(f'All tasks completed')
-    #     return
-    #     return
-    #     V = 0
-    #     t = tqdm(seeds, desc=f'Evaluating model ')
-    #     for seed in t:
-
-
-    #         v, info = self.executeEpisode(model=model,seed=seed)
-    #         wandb.log(info)
-
-    #         if v > 0:
-    #             V += v
-    #     log.info(f"Finished Evaluation, obtained winrate {V/len(seeds)}")
-    #     print(f"Finished Evaluation, obtained winrate {V/len(seeds)}")
 
 if __name__=="__main__":
     pass

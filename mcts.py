@@ -1,8 +1,7 @@
-#Based upon https://github.com/tmoer/alphazero_singleplayer/blob/master/alphazero.py
+#Adapted from https://github.com/tmoer/alphazero_singleplayer/blob/master/alphazero.py
 #and https://github.com/suragnair/alpha-zero-general/blob/master/MCTS.py
 import numpy as np
 import logging 
-import copy 
 
 log = logging.getLogger(__name__)
 class State():
@@ -117,7 +116,7 @@ class MCTS():
 
         return pi, mask
 
-    # based on https://link.springer.com/article/10.1007/s00521-021-05928-5#Sec14
+    # Original Paper https://link.springer.com/article/10.1007/s00521-021-05928-5#Sec14
     def get_A0GB_target(self):
         # log.debug('Calculating A0GB target ... ')
         state=self.root
@@ -136,13 +135,9 @@ class MCTS():
     def search(self,env):
         state = self.root # reset to root for new trace
 
-        # print(f'mask post copy: {np.where(env.available_actions())[0]}')
-
         while not state.terminal: 
             action = state.select(c_puct=self.c_puct)
             new_obs,reward,done,_ = env.step(action.index)
-            
-            # print(f'mask post a step: {np.where(env.available_actions())[0]}')
 
             if hasattr(action,'child_state'):
                 state = action.child_state # select
@@ -167,11 +162,6 @@ class MCTS():
         if not hasattr(child_action,'child_state'):
             self.root = None
             self.root_obs = next_obs
-        # elif np.linalg.norm(child_action.child_state.index - next_obs) > 0.01:
-        #     print('Warning: this domain seems stochastic. Not re-using the subtree for next search. '+
-        #           'To deal with stochastic environments, implement progressive widening.')
-        #     self.root = None
-        #     self.root_obs = next_obs            
         else:
             self.root = child_action.child_state
 

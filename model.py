@@ -9,7 +9,7 @@ import os
 
 log = logging.getLogger(__name__)
 
-#Based on https://github.com/suragnair/alpha-zero-general/blob/master/othello/pytorch/NNet.py
+#Adapted from https://github.com/suragnair/alpha-zero-general/blob/master/othello/pytorch/NNet.py
 class PandemicModel:
     """
 
@@ -39,7 +39,6 @@ class PandemicModel:
         pi_losses = AverageMeter()
         v_losses = AverageMeter()
         for _ in t:
-            # log.info(f"Beginning epoch #{epoch} for {batch_count} batches...")
             for _ in range(batch_count):
                 sample_ids = np.random.randint(len(examples), size=self.args.batch_size)
                 states, pis, vs, masks = list(zip(*[examples[i] for i in sample_ids]))
@@ -108,9 +107,6 @@ class PandemicModel:
         if not os.path.exists(filepath):
             raise ("No model in path {}".format(filepath))
         
-        # map_location = None if self.args.cuda else 'cpu'
-        # checkpoint = torch.load(filepath, map_location=map_location)
-
         self.nnet.load_state_dict(torch.load(filepath))
 
 class PandemicNNET(nn.Module):
@@ -194,24 +190,3 @@ class AverageMeter(object):
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
-
-
-"""
-def get_cure_cards_kwargs(self, game):
-		cure_cards_kwargs = [None] * 4
-		if game.turn_phase==TurnPhase.ACTIONS:
-			cards_required = 4 if self.playerrole==PlayerRole.SCIENTIST else 5
-			cure_possible = [j >= cards_required and game.cities[self.position].research_station for j in self.colors.values()], #discover cure
-			for i, b in enumerate(cure_possible):
-				if b:
-					colour = game.commons['colors'][i]
-
-					pos_cards = [card for card in self.cards if card.color==colour]
-
-					chosen_cards = np.random.choice(pos_cards, size=(cards_required,))
-
-					cure_cards_kwargs[i] = [card.name for card in chosen_cards]
-
-		return cure_cards_kwargs
-
-"""

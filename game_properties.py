@@ -41,6 +41,7 @@ ACTIONS_LIST = list(chain.from_iterable(ACTIONS_LIST))
 NO_CITY_SELECTIONS = 8
 CITY_SELECTION_OFFSET = NO_CITIES * NO_CITY_SELECTIONS
 	
+#Taken from https://github.com/BlopaSc/PAIndemic
 city_cards = {
 	'algiers': {'country':'algeria','color':'black','pop':2946000,'pop_density':6500,'connects':['madrid', 'paris', 'istanbul', 'cairo']},
 	'atlanta': {'country':'united_states','color':'blue','pop':4715000,'pop_density':700,'connects':['chicago', 'washington', 'miami']},

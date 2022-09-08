@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-@author: Blopa
-"""
+#Adapted from https://github.com/BlopaSc/PAIndemic
 import copy
 import functools
 import itertools
@@ -1242,124 +1239,20 @@ class InfectionDeck:
 			deck.append(new_pile)
 		return deck
 
-if __name__ == '__main__':
-	from Players import NNPlayer,RandomPlayer
-	from random import randint
+if __name__ == '__main__':	
+	game = Game([Player(),Player()],log_game=False,external_log = None)
+	game.setup(players_roles=[PlayerRole.SCIENTIST,PlayerRole.RESEARCHER],seed=21)
+	game.game_advance()
 
-	# game = Game([NNPlayer(),NNPlayer()],log_game=False,external_log = None)# sys.stdout)
-	# game.setup(players_roles=[PlayerRole.SCIENTIST,PlayerRole.RESEARCHER],seed=randint(0, 1000000))
-	# game.game_advance()
+	reward = 0
+	done = False
 
-	# state = game.get_state_vector()
+	steps = 0
+	actions = 0
+	while not done:
+		available_acts = game.available_actions()
+		available_acts = [1 for act in available_acts if act]
 
-	hello = [0,1,2,3,4,5,6,7,8,9,10,11,12]
+		action = game.players[game.current_player].request_action(game)
+		state, reward, done, _ = game.step(action)
 
-	cards_required = 4 
-
-	chosen_cards = [card for card in hello if card%3==0]
-
-	action_kwargs = chosen_cards[:cards_required]
-	print(action_kwargs)
-
-	def temp():
-		game = Game([NNPlayer(),NNPlayer()],log_game=False,external_log = sys.stdout)
-		game.setup(players_roles=[PlayerRole.SCIENTIST,PlayerRole.RESEARCHER],seed=randint(0, 1000000))
-		game.game_advance()
-
-		state = game.get_state_vector()
-		print(len(state))
-		# act = game.players[game.current_player].available_actions_NN(game)
-		# print(len(state))
-		# print(len(act))
-		# print("\n")
-		# print(state)
-		reward = 0
-		done = False
-
-		steps = 0
-		actions = 0
-		while not done:
-			available_acts = game.available_actions()
-			available_acts = [1 for act in available_acts if act]
-			aalen = len(available_acts)
-			actions += aalen
-			steps += 1
-
-			action = game.players[game.current_player].request_action(game)
-			state, reward, done, _ = game.step(action)
-
-		return (actions/steps)
-
-	# yesdressavg = []
-	# for i in range(1000):
-	# 	yesdressavg.append(temp())
-	
-	# print(f"actions avg: {sum(yesdressavg)/len(yesdressavg)}")
-"""
-Expected output of test:
-	Roles=SCIENTIST,RESEARCHER
-	Seed=21
-	Setting game up
-	SCIENTIST drew: delhi
-	SCIENTIST drew: manila
-	SCIENTIST drew: taipei
-	SCIENTIST drew: tokyo
-	RESEARCHER drew: seoul
-	RESEARCHER drew: khartoum
-	RESEARCHER drew: montreal
-	RESEARCHER drew: hong_kong
-	Infect 1-blue at: paris
-	Infect 1-yellow at: santiago
-	Infect 1-blue at: new_york
-	Infect 2-black at: istanbul
-	Infect 2-black at: riyadh
-	Infect 2-red at: tokyo
-	Infect 3-black at: kolkata
-	Infect 3-blue at: washington
-	Infect 3-yellow at: sao_paulo
-	Turn begin: RESEARCHER
-	RESEARCHER gave seoul to: SCIENTIST
-	RESEARCHER drove to: washington
-	RESEARCHER direct flew to: hong_kong
-	RESEARCHER discarded: hong_kong
-	RESEARCHER direct flew to: khartoum
-	RESEARCHER discarded: khartoum
-	RESEARCHER drew: cairo
-	RESEARCHER drew: osaka
-	Infect 1-black at: cairo
-	Infect 1-blue at: essen
-	Turn begin: SCIENTIST
-	SCIENTIST direct flew to: tokyo
-	SCIENTIST discarded: tokyo
-	SCIENTIST drove to: osaka
-	SCIENTIST direct flew to: manila
-	SCIENTIST discarded: manila
-	SCIENTIST drove to: san_francisco
-	SCIENTIST drew: epidemic
-	Epidemic at: karachi
-	Infect 3-black at: karachi
-	SCIENTIST drew: lima
-	Infect 1-blue at: paris
-	Infect 1-black at: riyadh
-	Turn begin: RESEARCHER
-	RESEARCHER direct flew to: osaka
-	RESEARCHER discarded: osaka
-	RESEARCHER drove to: taipei
-	RESEARCHER drove to: osaka
-	RESEARCHER direct flew to: montreal
-	RESEARCHER discarded: montreal
-	RESEARCHER drew: baghdad
-	RESEARCHER drew: kolkata
-	Infect 0-black at: karachi
-	Outbreak at: karachi
-	Infect 1-black at: baghdad
-	Infect 0-black at: riyadh
-	Outbreak at: riyadh
-	Infect 1-black at: cairo
-	Infect 1-black at: baghdad
-	Infect 1-black at: tehran
-	Infect 1-black at: delhi
-	Infect 1-black at: mumbai
-	Infect 1-blue at: essen
-"""
-	

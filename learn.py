@@ -4,7 +4,6 @@ from sys import stdout
 from agent import AZ_Agent
 from model import PandemicModel
 from Game import Game
-from torch import cuda
 import numpy as np
 import wandb
 from collections import Counter
@@ -18,9 +17,6 @@ def generate_ep(i, seed):
     train_examples, info = agent.executeEpisode(seed=seed)
     log.info(f'Episode {i} from seed {seed} finished!')
     return train_examples, info
-    # except Exception as e:
-    #     log.warning(f'Failed task {seed} :(, \n with warning: \n{e}\n')
-    #     return None
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -30,9 +26,8 @@ if __name__ == "__main__":
     parser.add_argument('--n_hidden_units', type=int, default=1024, help='Number of units per hidden layers in NN')    
     parser.add_argument('--lr', type=float, default=0.01, help='Learning rate')
     parser.add_argument('--max_lr', type=float, default=0.1, help='Max Learning rate')
-    # parser.add_argument('--momentum', type=float, default=0.9, help='Momentum during learning')
     parser.add_argument('--dropout', type=float, default=0.7, help='Dropout rate')
-    parser.add_argument('--cuda',type=bool,default=cuda.is_available())
+    parser.add_argument('--cuda',type=bool,default=False, help='Warning code not fully setup to run with cuda, unsupported')
     #Learning Args
     parser.add_argument('--n_generations', type=int, default=1, help='Number of generatations of training and learning to perform')
     parser.add_argument('--n_ep', type=int, default=500, help='Number of episodes to generate per generation')
@@ -49,10 +44,9 @@ if __name__ == "__main__":
     parser.add_argument('--db_max_size', type=int, default=20, help='Max Size of the training database, in generatations')
     parser.add_argument('--db_rate', type=int, default=2, help='Number of generatations to perform before incrementing size of Database')
     #other
-    parser.add_argument( '-log','--loglevel',default='info',choices=logging._nameToLevel.keys(),
-                     help='Provide logging level. Example --loglevel debug, default=warning' )
+    parser.add_argument( '-log','--loglevel',default='INFO',choices=logging._nameToLevel.keys(),help='Provide logging level. Example --loglevel debug, default=warning' )
     parser.add_argument('--n_processes', default=1,type=int, help='Number of processes to use during data generation' )
-    parser.add_argument('--external_log',default=1,choices=[0,1], help='Log to wandb')
+    parser.add_argument('--external_log',default=0,type=int,choices=[0,1], help='Log to wandb')
     args = parser.parse_args()
 
     logging.basicConfig(stream=stdout,level=args.loglevel.upper(),
@@ -68,7 +62,6 @@ if __name__ == "__main__":
         })
 
     log.info('\nStarting new Attempt ...')
-
     log.info('Loading %s...', Game.__name__)
     env = Game()
 
@@ -88,10 +81,8 @@ if __name__ == "__main__":
     if args.load_gen is not None:
         log.info("Loading 'trainExamples' from file...")
         agent.training_history.load_checkpoint(iteration=args.model_iter, generation=args.load_gen)
-
  
     log.info('Starting the learning process ...')
-
     for i in range(start_gen, start_gen+args.n_generations):
         log.info(f'Starting Generation #{i} ... ')
         generation_train_examples = []
