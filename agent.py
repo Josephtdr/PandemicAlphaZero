@@ -7,11 +7,6 @@ from database import Database
 log = logging.getLogger(__name__)
 #Adapted from https://github.com/suragnair/alpha-zero-general/blob/master/Coach.py
 class AZ_Agent():
-    """
-    This class executes the self-play + learning. It uses the functions defined
-    in Game and NeuralNet. args are specified in main.py.
-    """
-
     def __init__(self, env, model, args, training=True, practice=True):
         self.env = env
         self.model = model

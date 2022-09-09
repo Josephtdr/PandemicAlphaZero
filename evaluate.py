@@ -40,7 +40,8 @@ if __name__ == "__main__":
     parser.add_argument('--external_log',default=0,type=int,choices=[0,1], help='Log to wandb')
     parser.add_argument('--n_processes', default=1,type=int, help='Number of processes to use during data generation' )
     parser.add_argument('--n_hidden_units', type=int, default=1024, help='Number of units per hidden layers in NN')    
-    parser.add_argument('--mode_MCTS',default=0,type=int,choices=[0,1], help='evaluate with or without MCTS')
+    parser.add_argument('--mode_MCTS',default=1,type=int,choices=[0,1], help='evaluate with or without MCTS')
+    parser.add_argument('--mode_final',default=0,type=int,choices=[0,1], help='evaluate with and without MCTS')
     args = parser.parse_args()
 
     logging.basicConfig(stream=stdout,level=args.loglevel.upper(),
@@ -61,6 +62,13 @@ if __name__ == "__main__":
 
     seeds = np.random.randint(1, 1000001, size=(args.n_ep,))
     
+    if args.mode_final:
+        if len(args.load_gen)==1:
+            args.load_gen.append(args.load_gen[0])
+        else:
+            log.warning("Trying to perform final evaluation on multiple generations... exiting!")
+            exit()
+
     for load_gen in args.load_gen:
         if args.external_log:
             run = wandb.init(
@@ -83,3 +91,7 @@ if __name__ == "__main__":
         log.info(f'Processing Finished')
         if args.external_log:
             run.finish()
+
+        if args.mode_final:
+            args.mode_MCTS = 0
+        

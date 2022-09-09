@@ -11,9 +11,6 @@ log = logging.getLogger(__name__)
 
 #Adapted from https://github.com/suragnair/alpha-zero-general/blob/master/othello/pytorch/NNet.py
 class PandemicModel:
-    """
-
-    """
     def __init__(self, env, args):
         self.nnet = PandemicNNET(env, args)
         self.args = args
@@ -109,6 +106,7 @@ class PandemicModel:
         
         self.nnet.load_state_dict(torch.load(filepath))
 
+#Adapted from https://github.com/suragnair/alpha-zero-general/blob/master/othello/pytorch/OthelloNNet.py
 class PandemicNNET(nn.Module):
     def __init__(self, env, args):        
         self.action_dim = env.action_dimensions
