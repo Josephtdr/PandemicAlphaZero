@@ -11,19 +11,24 @@ Just a simple terminal connect4 player, ai utilising minimax with alpha/beta pru
 ## Getting Started
 
 First install docker, then build the included Dockerfile from within downloaded folder 
-  `docker build -t {image_name} -f Dockerfile .`
+ 
+ `docker build -t {image_name} -f Dockerfile .`
   
 In order to evaluate your trained models make sure to create a volume 
+  
   `docker volume create {volume_name}`
   
 Then link your container to the volume when initialising
-  `docker run -itd --name {container_name} -v {volume_name}:/learn/checkpoints {image_name}`
+ 
+ `docker run -itd --name {container_name} -v {volume_name}:/learn/checkpoints {image_name}`
   
 You can then run commands via
-  `docker exec -it {container_name} {command}`
+ 
+ `docker exec -it {container_name} {command}`
 
 <!-- USAGE EXAMPLES -->
 To train a model your command is:
+  
   `python3 learn.py [Args]`
 
 Args are all outlined in the learn.py file itself, some key ones: 
@@ -34,6 +39,7 @@ Args are all outlined in the learn.py file itself, some key ones:
   --external_log : Log game statistics to wandb (requires you to log in with command 'wandb login') 
   
 To evaluate a previously trained model your command is:
+  
   `python3 evaluate.py [Args]`
   
 Args are all outlined in the evaluate.py file itself, some key ones: 
